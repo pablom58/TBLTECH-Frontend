@@ -1,5 +1,6 @@
 import React , { useState , useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
+import swal from 'sweetalert'
 
 import { resetPassword } from '../api/Auth'
 
@@ -78,17 +79,17 @@ const ResetPassword = props => {
         if(props.match)
             if(props.match.params.hash)
                 if(data.password === '' || data.confirmPassword === '' || data.password !== data.confirmPassword){
-                    alert('Invalid Data')
+                    swal('Something Wrong', 'You have to provide all the data and match the password with the confirm password', 'error')
                 }else{
                     let response = await resetPassword({
                         hash: props.match.params.hash,
                         password: data.password
                     })
-        
                     if(response.status === 200){
+                        swal('All is Fine',response.message, 'success')
                         history.push('/')
                     }else{
-                        alert(response.message)
+                        swal('Something Wrong',response.message, 'error')
                     }
                 }
     }

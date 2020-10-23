@@ -2,7 +2,7 @@ import React , { Fragment, useState , useEffect} from 'react'
 import { useHistory } from 'react-router-dom'
 import swal from 'sweetalert'
 
-import { create as createContact , getContact , update } from '../api/Contact'
+import { getUserInfo , updateUser } from '../api/User'
 
 import {
     TextField,
@@ -58,23 +58,24 @@ const ContactForm = props => {
         lastName: '',
         email: '',
         phoneNumber: '',
+        password: '',
+        confirmPassword: ''
     })
 
     const classes = useStyles()
     const history = useHistory()
 
     useEffect(() => {
-        if(props.match && localStorage.getItem('access_token'))
-            if(props.match.params.id)
-                getContact(props.match.params.id)
-                    .then(response => setData({
-                        ...data,
-                        firstName: response.data.firstName,
-                        lastName: response.data.lastName,
-                        email: response.data.email,
-                        phoneNumber: response.data.phoneNumber
-                    }))
-                    .catch(error => console.log(error))
+        if(localStorage.getItem('access_token'))
+            getUserInfo()
+                .then(response => setData({
+                    ...data,
+                    firstName: response.data.user.firstName,
+                    lastName: response.data.user.lastName,
+                    email: response.data.user.email,
+                    phoneNumber: response.data.user.phoneNumber
+                }))
+                .catch(error => console.log(error))                
     },[])
 
     const inputs = [
@@ -102,6 +103,18 @@ const ContactForm = props => {
             name: 'phoneNumber',
             value: data.phoneNumber
         },
+        {
+            label: 'Password',
+            type: 'password',
+            name: 'password',
+            value: data.password
+        },
+        {
+            label: 'Confirm Password',
+            type: 'password',
+            name: 'confirmPassword',
+            value: data.confirmPassword
+        },
     ]
 
     const handleChange = input => {
@@ -111,64 +124,26 @@ const ContactForm = props => {
         })
     }
 
-    const newContact = async () => {
-        if(
-            data.firstName === '' ||
-            data.lastName === '' ||
-            data.email === '' ||
-            data.phoneNumber === ''
-        ){
-            swal('Something Wrong', 'You have to provide all the data', 'error')
-        }else{
-            let response = await createContact(data)
-
-            if(response.status === 200){
-                swal('All is Fine', response.message, 'success')
-                history.push('/home')
-            }else{
-                swal('Something Wrong', response.message, 'error')
-            }
-        } 
-    }
-
-    const updateContact = async () => {
-        if(
-            data.firstName === '' ||
-            data.lastName === '' ||
-            data.email === '' ||
-            data.phoneNumber === ''
-        ){
-            swal('Something Wrong', 'You have to provide all the data', 'error')
-        }else{
-            let response = await update({
-                contact_id: props.match.params.id,
-                ...data
-            })
-
-            if(response.status === 200){
-                swal('All is Fine', response.message, 'success')
-                history.push('/home')
-            }else{
-                swal('Something Wrong', response.message, 'error')
-            }
-        } 
-    }
-
     const handleSubmit = () => {
-        if(props.match){
-            if(props.match.params.id){
-                updateContact()
-            }else{
-                newContact()
-            }
+        if((data.password !== '' && (data.confirmPassword === '' || data.password !== data.confirmPassword)) || data.firstName === '' || data.lastName === '' || data.email === '' || data.phoneNumber === ''){
+            swal('Something Wrong', 'You have to provide all the data, if you are changing your password please verify that the password and confirm password fields are the same', 'error')
         }else{
-            newContact()
-        }            
+            updateUser(data)
+                .then(response => {
+                    swal('All is Fine', response.message, 'success')
+                    setData({
+                        ...data,
+                        password: '',
+                        confirmPassword: ''
+                    })
+                })
+                .catch(error => swal('Something Wrong', error.message, 'error'))
+        }        
     }
 
     return (
         <div className={classes.container}>
-            <Typography className={classes.title}>CONTACT DETAILS</Typography>
+            <Typography className={classes.title}>USER DETAILS</Typography>
             {
                 inputs.map((input,id) => <Fragment key={`register_input_${id}`}>
                                             <Typography gutterBottom className={classes.label}>{input.label}</Typography>

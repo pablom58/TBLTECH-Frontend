@@ -10,6 +10,7 @@ import ResetPassword from './views/ResetPassword'
 
 const useStyles = makeStyles({
     container: {
+        width: '100%',
         display: 'flex',
         justifyContent: 'center',
         background: '#FCFCFC',

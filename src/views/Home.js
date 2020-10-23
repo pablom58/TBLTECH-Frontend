@@ -1,10 +1,11 @@
-import React , { Fragment , useState } from 'react'
+import React , { Fragment , useState , useEffect } from 'react'
 import { Switch , Route , useHistory } from 'react-router-dom'
 
 import Appbar from '../components/Appbar'
 import LateralSection from '../components/LateralSection'
 import Contacts from '../components/Contacts'
 import ContactForm from '../components/ContactForm'
+import Profile from './Profile'
 
 import { 
     Typography, 
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     content: {
         width: '100%',
         flexGrow: 1,        
-        padding: '15px 30px 0 70px',
+        padding: '15px 30px',
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
@@ -32,7 +33,7 @@ const useStyles = makeStyles(theme => ({
         ...theme.mixins.toolbar,
     },
     title: {
-        fontSize: '22px',
+        fontSize: '32px',
         fontWeight: 'bold',
     },
     button: {
@@ -66,6 +67,11 @@ const Home = props => {
     const classes = useStyles()
     const [drawerOpen,setDrawerOpen] = useState(false)
     const history = useHistory()
+
+    useEffect(() => {
+        if(!localStorage.getItem('access_token'))
+            history.push('/')
+    },[history.location.pathname])
 
     return (
         <Fragment>
@@ -105,6 +111,7 @@ const Home = props => {
                                                             <ContactForm match={match} />
                                                         </div>
                                                     )} />
+                    <Route path='/home/profile' exact component={Profile} />
                 </Switch>
             </main>
         </Fragment>

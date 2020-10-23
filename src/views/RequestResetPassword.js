@@ -1,5 +1,7 @@
 import React , { useState } from 'react'
-import { Link , useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
+
+import swal from 'sweetalert'
 
 import { requestResetPassword } from '../api/Auth'
 
@@ -80,14 +82,14 @@ const RequestResetPassword = props => {
             alert('Invalid Data')
         }else{
             let response = await requestResetPassword(data)
-            console.log(response)
+
             if(response.status === 200){
-                alert('Email sent')
+                swal('All is Fine', response.message, 'success')
                 setData({
                     email: ''
                 })
             }else{
-                alert(response.message)
+                swal('Something Wrong', response.message, 'error')
             }
         }
     }

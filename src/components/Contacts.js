@@ -1,5 +1,6 @@
 import React , { useState , useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link , useHistory } from 'react-router-dom'
+import swal from 'sweetalert'
 
 import { getPage as getContactPage , remove as removeContact } from '../api/Contact'
 
@@ -41,9 +42,10 @@ const useStyles = makeStyles({
         background: '#0097F6',
         color: '#fff',
         borderRadius: '6px',
-        fontSize: '32px',
+        fontSize: '18px',
         fontWeight: '400',
         margin: '0 9px',
+        border: 'none',
         '&:hover': {
             background: '#0097F6',
             color: '#fff',
@@ -82,6 +84,8 @@ const useStyles = makeStyles({
 const Contacts = props => {
 
     const classes = useStyles()
+    const history = useHistory()
+
     const [data,setData] = useState({
         pages: 1,
         currentPage: 1,
@@ -89,21 +93,23 @@ const Contacts = props => {
         prevPage: 0,
         contacts: []
     })
+
     const [page,setPage] = useState(1)
 
     const headers = ['First Name','Last Name','Email','Contact Number','']
 
     const getPage = page => {
-        getContactPage(page)
-            .then(response => setData({
-                ...data,
-                pages: response.data.pages,
-                nextPage: response.data.nextPage,
-                prevPage: response.data.prevPage,
-                currentPage: response.data.currentPage,
-                contacts: response.data.contacts
-            }))
-            .catch(error => console.error(error))
+        if(localStorage.getItem('access_token'))
+            getContactPage(page)
+                .then(response => setData({
+                    ...data,
+                    pages: response.data.pages,
+                    nextPage: response.data.nextPage,
+                    prevPage: response.data.prevPage,
+                    currentPage: response.data.currentPage,
+                    contacts: response.data.contacts
+                }))
+                .catch(error => console.error(error))       
     }
 
     useEffect(() => {
@@ -121,14 +127,30 @@ const Contacts = props => {
     }
 
     const handleDelete = async contact_id => {
-        if(confirm('Are you sure?'))
-            removeContact(contact_id)
-                .then(response => getPage(data.currentPage))
-                .catch(error => console.error(error))
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this Contact!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then(willDelete => {
+            if(willDelete)
+                removeContact(contact_id)
+                    .then(response => {
+                        swal('All is fine', response.message, 'success')
+                        getPage(data.currentPage)
+                    })
+                    .catch(error => swal('Something Wrong', error.message, 'error'))
+        })
+
+        // if()
+            
     }
 
     return (
         <div className={classes.tableCont} >  
+            <div className={classes.filterCont}>
+            </div>
             <TableContainer className={classes.container}>
                 <Table stickyHeader aria-label="sticky table" style={{width: '100%'}}>
                     <TableHead>
@@ -164,34 +186,13 @@ const Contacts = props => {
                 </Table>
             </TableContainer>
             <div className={classes.pagination} >
-                <Button className={classes.paginationButton} onClick={prevPage} >{ '<' }</Button>
+                <button className={classes.paginationButton} onClick={prevPage} >{ '<' }</button>
                 <p className={classes.paginationPage} >{data.currentPage}</p>
                 <p className={classes.paginationTotalPages} >De { data.pages }</p>
-                <Button className={classes.paginationButton} onClick={nextPage} >{ '>' }</Button>
+                <button className={classes.paginationButton} onClick={nextPage} >{ '>' }</button>
             </div>
         </div>
     )
 }
 
 export default Contacts
-
-// export default function StickyHeadTable() {
-//   const classes = useStyles();
-//   const [page, setPage] = React.useState(0);
-//   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-//   const handleChangePage = (event, newPage) => {
-//     setPage(newPage);
-//   };
-
-//   const handleChangeRowsPerPage = (event) => {
-//     setRowsPerPage(+event.target.value);
-//     setPage(0);
-//   };
-
-//   return (
-//     <Paper className={classes.root}>
-      
-      
-//     </Paper>
-//   );
