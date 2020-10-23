@@ -4,14 +4,13 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import Login from './views/Login'
 import Register from './views/Register'
+import Home from './views/Home'
 
 const useStyles = makeStyles({
     container: {
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
         background: '#FCFCFC',
-        minHeight: '100vh',
         padding: '15px'
     }
 })
@@ -25,6 +24,7 @@ const App = props => {
             <Switch>
                 <Route path='/' exact component={Login} />
                 <Route path='/register' exact component={Register} />
+                <Route path='/home' component={Home} />
             </Switch>
         </div>
     )
