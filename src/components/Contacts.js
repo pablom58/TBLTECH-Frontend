@@ -2,7 +2,7 @@ import React , { useState , useEffect } from 'react'
 import { Link , useHistory } from 'react-router-dom'
 import swal from 'sweetalert'
 
-import { getPage as getContactPage , remove as removeContact } from '../api/Contact'
+import { getPage as getContactPage , remove as removeContact , getContactFilter } from '../api/Contact'
 
 import {
     Table,
@@ -10,10 +10,10 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
-    Button,
-    IconButton
+    IconButton,
+    TextField,
+    Typography
 } from '@material-ui/core'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -79,12 +79,17 @@ const useStyles = makeStyles({
         lineHeight: '42px',
         margin: '0 4.5px'
     },
+    filterCont: {
+        width: '100%',
+        margin: '25px 0'
+    }
 })
 
 const Contacts = props => {
 
     const classes = useStyles()
-    const history = useHistory()
+
+    const [filter,setFilter] = useState('')
 
     const [data,setData] = useState({
         pages: 1,
@@ -93,8 +98,6 @@ const Contacts = props => {
         prevPage: 0,
         contacts: []
     })
-
-    const [page,setPage] = useState(1)
 
     const headers = ['First Name','Last Name','Email','Contact Number','']
 
@@ -109,7 +112,26 @@ const Contacts = props => {
                     currentPage: response.data.currentPage,
                     contacts: response.data.contacts
                 }))
-                .catch(error => console.error(error))       
+                .catch(error => {
+                    swal('Something Wrong', error.message, 'error')
+                    console.error(error)
+                })       
+    }
+
+    const getFilterPage = (page,filter) => {
+        getContactFilter(page,filter)
+            .then(response => setData({
+                ...data,
+                pages: response.data.pages,
+                nextPage: response.data.nextPage,
+                prevPage: response.data.prevPage,
+                currentPage: response.data.currentPage,
+                contacts: response.data.contacts
+            }))
+            .catch(error => {
+                swal('Something Wrong', error.message, 'error')
+                console.error(error)
+            })  
     }
 
     useEffect(() => {
@@ -118,12 +140,21 @@ const Contacts = props => {
 
     const prevPage = () => {
         if(data.prevPage >= 1)
-            getPage(data.prevPage)
+            if(filter === ''){
+                getPage(data.prevPage)
+            }else{
+                getFilterPage(data.prevPage,filter)
+            }
     }
 
     const nextPage = () => {
-        if(data.nextPage <= data.pages)
-            getPage(data.nextPage)
+        if(data.nextPage <= data.pages){
+            if(filter === ''){
+                getPage(data.nextPage)
+            }else{
+                getFilterPage(data.nextPage,filter)
+            }
+        }            
     }
 
     const handleDelete = async contact_id => {
@@ -141,15 +172,29 @@ const Contacts = props => {
                         getPage(data.currentPage)
                     })
                     .catch(error => swal('Something Wrong', error.message, 'error'))
-        })
+        })            
+    }
 
-        // if()
-            
+    const handleFilter = input => {
+        setFilter(input.target.value)
+        if(input.target.value === ''){
+            getPage(1)
+        }else{
+            getFilterPage(1,input.target.value)
+        }        
     }
 
     return (
         <div className={classes.tableCont} >  
             <div className={classes.filterCont}>
+                <Typography gutterBottom variant='h5'>Filter by Email</Typography>
+                <TextField 
+                    fullWidth
+                    variant='outlined'
+                    label='Filter'
+                    value={filter}
+                    onChange={handleFilter}
+                />
             </div>
             <TableContainer className={classes.container}>
                 <Table stickyHeader aria-label="sticky table" style={{width: '100%'}}>

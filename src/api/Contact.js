@@ -104,3 +104,27 @@ export const remove = contact_id => {
                 .then(response => response.json())
                 .catch(error => console.error(error))
 }
+
+export const getContactFilter = (page,email) => {
+    let token = localStorage.getItem('access_token')
+
+    if(!token)
+        return {
+            status: 401,
+            message: 'An error ocurred please logout and try again'
+        }
+
+    return fetch(`${ENTRYPOINT}/contact/search`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,                    
+                },
+                body: JSON.stringify({
+                    page,
+                    email
+                })
+            })
+                .then(response => response.json())
+                .catch(error => console.error(error))
+}

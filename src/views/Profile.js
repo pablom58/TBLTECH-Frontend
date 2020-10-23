@@ -75,7 +75,10 @@ const ContactForm = props => {
                     email: response.data.user.email,
                     phoneNumber: response.data.user.phoneNumber
                 }))
-                .catch(error => console.log(error))                
+                .catch(error => {
+                    swal('Something Wrong', error.message, 'error')
+                    console.error(error)
+                })                
     },[])
 
     const inputs = [

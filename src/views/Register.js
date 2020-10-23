@@ -130,7 +130,7 @@ const Register = props => {
             data.confirmPassword === '' ||
             data.password !== data.confirmPassword
         ){
-            alert('Invalid data')
+            swal('Something Wrong', 'Invalid Data', 'error')
         }else{
             let response = await register(data)
 
@@ -138,7 +138,7 @@ const Register = props => {
                 localStorage.setItem('access_token',response.data.token)
                 history.push('/home')
             }else{
-                alert(response.message)
+                swal('Something Wrong', response.message, 'error')
             }
         }       
     }

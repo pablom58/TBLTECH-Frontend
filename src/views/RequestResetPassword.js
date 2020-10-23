@@ -79,7 +79,7 @@ const RequestResetPassword = props => {
 
     const handleSubmit = async () => {
         if(data.email === ''){
-            alert('Invalid Data')
+            swal('Something Wrong', 'Invalid Data', 'error')
         }else{
             let response = await requestResetPassword(data)
 

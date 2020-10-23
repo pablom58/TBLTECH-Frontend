@@ -63,7 +63,7 @@ const ResetPassword = props => {
     useEffect(() => {
         if(props.match)
             if(!props.match.params.hash){
-                alert('Something Wrong')
+                swal('Something Wrong', 'Invalid Data', 'error')
                 history.push('/')
             }                
     },[])

@@ -61,7 +61,7 @@ const Appbar = props => {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>
-                    TBL TECH CONTACTS BY PMVS   
+                    TBL TECH CONTACTS
                 </Typography>
             </Toolbar>
         </AppBar>

@@ -92,7 +92,7 @@ const Login = props => {
 
     const handleSubmit = async () => {
         if(data.email === '' || data.password === ''){
-            alert('Invalid Data')
+            swal('Something Wrong', 'Invalid Data', 'error')
         }else{
             let response = await login(data)
 
@@ -100,7 +100,7 @@ const Login = props => {
                 localStorage.setItem('access_token',response.data.token)
                 history.push('/home')
             }else{
-                alert(response.message)
+                swal('Something Wrong', response.message, 'error')
             }
         }
     }
