@@ -1,7 +1,7 @@
 import React , { useState } from 'react'
 import { Link , useHistory } from 'react-router-dom'
 
-import { login } from '../api/User'
+import { requestResetPassword } from '../api/Auth'
 
 import {
     TextField,
@@ -57,27 +57,12 @@ const useStyles = makeStyles({
             background: '#FCFCFC',
         }
     },
-    contLink: {
-        width: '100%',
-        textAlign: 'right',
-        margin: '15px 0',
-        '& a': {
-            textAlign: '14px',
-            fontWeight: '400',
-            color: "#272727",
-            textDecoration: 'none'
-        },
-        '& a:hover': {
-            textDecoration: 'none'
-        }
-    }
 })
 
-const Login = props => {
+const RequestResetPassword = props => {
 
     const [data,setData] = useState({
         email: '',
-        password: ''
     })
 
     const classes = useStyles()
@@ -91,14 +76,16 @@ const Login = props => {
     }
 
     const handleSubmit = async () => {
-        if(data.email === '' || data.password === ''){
+        if(data.email === ''){
             alert('Invalid Data')
         }else{
-            let response = await login(data)
-
+            let response = await requestResetPassword(data)
+            console.log(response)
             if(response.status === 200){
-                localStorage.setItem('access_token',response.data.token)
-                history.push('/home')
+                alert('Email sent')
+                setData({
+                    email: ''
+                })
             }else{
                 alert(response.message)
             }
@@ -107,7 +94,7 @@ const Login = props => {
 
     return (
         <div className={classes.container}>
-            <Typography className={classes.title}>WELCOME</Typography>
+            <Typography className={classes.title}>RESET PASSWORD</Typography>
             <Typography gutterBottom className={classes.label}>Email</Typography>
             <TextField
                 fullWidth
@@ -119,37 +106,22 @@ const Login = props => {
                 value={data.email}
                 onChange={handleChange}
             />
-            <Typography gutterBottom className={classes.label}>Password</Typography>
-            <TextField
-                fullWidth
-                className={classes.textField}
-                autoComplete='off'
-                type='password'
-                variant='outlined'
-                label='Password'
-                name='password'
-                value={data.password}
-                onChange={handleChange}
-            />
-            <div className={classes.contLink}>
-                <Link to='/password/request/reset'>Forgot Password ?</Link>
-            </div>
             <Button
                 fullWidth
                 className={classes.firstButton}
                 onClick={handleSubmit}
             >
-                LOG IN
+                NEXT
             </Button>
             <Button
                 fullWidth
                 className={classes.secondButton}
-                onClick={() => history.push('/register')}
+                onClick={() => history.push('/')}
             >
-                REGISTER
+                LOG IN
             </Button>
         </div>
     )
 }
 
-export default Login
+export default RequestResetPassword
