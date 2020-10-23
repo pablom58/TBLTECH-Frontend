@@ -6,7 +6,7 @@ _This is the project of the test for TBL TECH_
 
 _git clone https://github.com/pablom58/TBLTECH-Frontend.git_
 
-## Frontend Code 🚀
+## Backend Code 🚀
 
 https://github.com/pablom58/TBLTECH-Backend
 
